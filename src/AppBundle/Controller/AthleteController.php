@@ -3,19 +3,39 @@
 namespace AppBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
+/**
+ * Athlete controller.
+ *
+ * @Route("/athlete")
+ */
 class AthleteController extends Controller
 {
     /**
-     * @Route("/athlete/test", name="athlete_index")
+     * @Route("/view/{id}", name="athlete_view")
+     * @Template("admin/athlete/view.html.twig")
+     *
+     * @param athlete unique id $id
+     * @return mixed
      */
-    public function testAction(Request $request)
+    public function viewAction($id)
     {
-        // replace this example code with whatever you need
-        return $this->render('admin/athlete.html.twig', [
-            'id' => 1
-        ]);
+        $em = $this->getDoctrine()->getManager();
+
+        $athlete = $em->getRepository('AppBundle:Athlete')->find($id);
+
+        if (!$athlete) {
+            throw $this->createNotFoundException('Unable to find entity.');
+        }
+
+        return array(
+            'athlete' => $athlete
+        );
     }
 }
